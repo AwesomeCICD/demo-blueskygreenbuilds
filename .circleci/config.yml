@@ -73,8 +73,7 @@ workflows:
   build_deploy:
     unless: << pipeline.parameters.cleanup >>
     jobs:
-      - unit-test:
-          context: Production-Only  #we'll see this is caught by nightly auditor as invalid.
+      - unit-test
       - sum-coverage:
           requires:
             - unit-test
@@ -85,12 +84,14 @@ workflows:
             branches:
               only: main
       - package-docker:
+          context: Production-Only  #we'll see this is caught by nightly auditor as invalid if used outaside main branch
           requires:
             - unit-test
           filters:
             branches:
               only: main
       - update-deployment:
+          context: Production-Only  #we'll see this is caught by nightly auditor as invalid if used outaside main branch
           requires:
             - package-docker
           filters:
@@ -100,6 +101,7 @@ workflows:
     when: << pipeline.parameters.cleanup >>
     jobs:
       - delete-deployment:
+          context: Production-Only  #we'll see this is caught by nightly auditor as invalid if used outaside main branch
           name: << pipeline.parameters.job_name >>
 
 jobs:
